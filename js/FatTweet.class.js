@@ -6,10 +6,6 @@ class FatTweet {
         var FT = this;
         var $tweetBoxes = $('.tweet-box[name="tweet"]:not(.fat-tweet-processed)');
         if(!$tweetBoxes.length) return;
-//        var observer = new MutationObserver(function(mutations) {
-//            var tweetBox = FT.getMutationActiveElement(mutations[0]);
-//            var $tweetBox = $(tweetBox);
-//        });
         $tweetBoxes
             .addClass('fat-tweet-processed')
             .each(function(){
@@ -56,8 +52,5 @@ class FatTweet {
             $newContent.append($(this)).append(' ');
         });
         return $newContent;
-    }
-    getMutationActiveElement(_MutationRecord){
-        return _MutationRecord.target.ownerDocument.activeElement;
     }
 }
