@@ -18,7 +18,7 @@
                 "bower_components/jquery-observe/jquery-observe.js",
                 "js/strip_tags.js",
                 "js/FatTweet.class.js",
-                "js/content.js"
+                "js/init.js"
             ]
         }
     ],
