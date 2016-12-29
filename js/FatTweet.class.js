@@ -1,6 +1,12 @@
 class FatTweet {
     constructor(){
         this.processTweetBoxes();
+        var FT = this;
+        $('body').on('click', '.fat-tweet-convert-text', function(e){
+            e.preventDefault();
+            var $form = $(this).closest('form');
+            FT.convertText($form);
+        });
     }
     processTweetBoxes(){
         var FT = this;
