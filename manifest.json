@@ -15,6 +15,7 @@
             "js": [
                 "bower_components/jQuery/dist/jquery.min.js",
                 "bower_components/html2canvas/build/html2canvas.min.js",
+                "bower_components/jquery-observe/jquery-observe.js",
                 "js/strip_tags.js",
                 "js/FatTweet.class.js",
                 "js/content.js"

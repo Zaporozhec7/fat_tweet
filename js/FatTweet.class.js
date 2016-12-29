@@ -1,40 +1,36 @@
 class FatTweet {
     constructor(){
-        this.init();
+        this.processTweetBoxes();
     }
-    init(){
-        // http://stackoverflow.com/questions/1391278/contenteditable-change-events
-        $('body:not(.fat-tweet-init)')
-        .addClass('fat-tweet-init')
-        .each(function(){
-            $(this).on('focus', '[contenteditable]', function() {
-                var $this = $(this);
-                $this.data('before', $this.html());
-                return $this;
-            }).on('blur keyup paste input', '[contenteditable]', function() {
-                var $this = $(this);
-                var $newHtml = $this.html();
-                if ($this.data('before') !== $newHtml) {
-                    $this.data('before', $newHtml);
-                    $this.trigger('change');
-                }
-                return $this;
-            });
+    processTweetBoxes(){
+        var FT = this;
+        var $tweetBoxes = $('.tweet-box[name="tweet"]:not(.fat-tweet-processed)');
+        if(!$tweetBoxes.length) return;
+//        var observer = new MutationObserver(function(mutations) {
+//            var tweetBox = FT.getMutationActiveElement(mutations[0]);
+//            var $tweetBox = $(tweetBox);
+//        });
+        $tweetBoxes
+            .addClass('fat-tweet-processed')
+            .each(function(){
+                var $tweetBox = $(this);
+                var $form = $tweetBox.closest('form');
+                FT.processTweetForm($form);
         });
     }
     processTweetForm($form){
         var $button = $('<button class="btn fat-tweet-convert-text js-tooltip" data-delay="150" data-original-title="Convert text into image" type="button"><img src="'+chrome.runtime.getURL('img/32.png')+'"></button>');
         $form
-            .addClass('fat-tweet-processed')
+            .addClass('fat-tweet-processed-form')
             .find('.btn.tweet-btn')
             .before($button);
         return $form;
     }
     isTweetFormProcessed($form){
-        return $form.hasClass('fat-tweet-processed');
+        return $form.hasClass('fat-tweet-processed-form');
     }
     convertText($form){
-        var _FatTweet = this;
+        var FT = this;
         var $area = $form.find('.tweet-box[name="tweet"]');
         $area.addClass('screenshot-process');
         html2canvas($area.get(0), {
@@ -42,7 +38,7 @@ class FatTweet {
                 $area.after(canvas);
                 $area
                     .removeClass('screenshot-process')
-                    .html(_FatTweet.getLinksClean($area.children('div')));
+                    .html(FT.getLinksClean($area.children('div')));
                 $area.focus();
             }
         });
@@ -60,5 +56,8 @@ class FatTweet {
             $newContent.append($(this)).append(' ');
         });
         return $newContent;
+    }
+    getMutationActiveElement(_MutationRecord){
+        return _MutationRecord.target.ownerDocument.activeElement;
     }
 }
