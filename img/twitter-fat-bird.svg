@@ -1,0 +1,41 @@
+<?xml version="1.0"?><svg width="553.43378" height="356.35138" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <title>twitter</title>
+ <defs>
+  <linearGradient id="linearGradient5409">
+   <stop offset="0" id="stop5411" stop-color="#eeeeee"/>
+   <stop offset="1" id="stop5413" stop-opacity="0" stop-color="#eeeeee"/>
+  </linearGradient>
+  <linearGradient id="linearGradient5399">
+   <stop offset="0" id="stop5401" stop-color="#0197fd"/>
+   <stop offset="1" id="stop5403" stop-color="#0169c8"/>
+  </linearGradient>
+  <linearGradient id="linearGradient5387">
+   <stop offset="0" id="stop5389" stop-color="#f0a513"/>
+   <stop offset="1" id="stop5391" stop-color="#ffff00"/>
+  </linearGradient>
+  <linearGradient id="linearGradient5371">
+   <stop offset="0" id="stop5373" stop-color="#aaccee"/>
+   <stop offset="1" id="stop5375" stop-color="#0197fd"/>
+  </linearGradient>
+  <linearGradient xlink:href="#linearGradient5409" id="linearGradient5430" x1="0.532372" y1="0.015841" x2="0.591928" y2="1.00764"/>
+  <linearGradient xlink:href="#linearGradient5399" id="linearGradient3027" x1="0.575129" y1="0.159383" x2="0.291404" y2="0.859531"/>
+  <linearGradient xlink:href="#linearGradient5371" id="linearGradient3830" x1="0.745281" y1="0.201859" x2="0.179244" y2="0.86956"/>
+  <linearGradient xlink:href="#linearGradient5387" id="linearGradient3024" x1="0.045019" y1="0.412357" x2="0.15927" y2="1.063194"/>
+  <pattern height="100" width="100" y="0" x="0" patternUnits="userSpaceOnUse" id="gridpattern">
+   <image height="100" width="100" y="0" x="0"/>
+  </pattern>
+ </defs>
+ <metadata id="metadata4753">image/svg+xml</metadata>
+ <g>
+  <title>Layer 1</title>
+  <g id="svg_1">
+   <path d="m221.033463,149.912018c-3.471344,9.876648 -12.342331,16.146027 -19.813858,14.003525c-7.471802,-2.142517 -10.714798,-11.886154 -7.243729,-21.762543c3.471054,-9.876373 12.342041,-16.146034 19.813858,-14.003525c7.471512,2.142792 10.714798,11.886154 7.243729,21.762543z" fill="#eeeeee" id="svg_2"/>
+   <path d="m330.280396,158.705917c0,37.353546 -33.106659,67.634491 -73.945984,67.634491c-40.83902,0 -73.945709,-30.280945 -73.945709,-67.634491c0,-37.353813 33.106689,-67.634766 73.945709,-67.634766c40.839325,0 73.945984,30.280952 73.945984,67.634766z" fill="url(#linearGradient3830)" id="svg_3"/>
+   <path d="m268.295563,210.940536c-8.575409,12.973221 -32.429062,14.374451 -53.279007,3.129822c-20.84996,-11.244873 -30.8004,-30.877609 -22.224991,-43.85083c8.575119,-12.973495 32.428787,-14.37471 53.278732,-3.129822c20.84996,11.244888 30.8004,30.877609 22.225266,43.85083z" fill="#71b6ff" id="svg_4"/>
+   <path d="m255.58786,144.964355c-3.082138,9.697693 -19.378387,13.981354 -36.398788,9.567642c-17.020691,-4.413712 -28.320038,-15.853241 -25.2379,-25.550919c3.082138,-9.697685 19.378387,-13.981361 36.399078,-9.56765c17.020401,4.413719 28.319763,15.853249 25.23761,25.550926z" fill="url(#linearGradient5430)" opacity="0.539095" id="svg_5"/>
+   <path d="m214.082138,149.155853c-1.663147,4.732178 -5.855484,7.752518 -9.363892,6.746552c-3.508408,-1.006241 -5.004379,-5.657867 -3.341507,-10.390045c1.663147,-4.731918 5.855484,-7.752518 9.364166,-6.746277c3.508408,1.005966 5.004379,5.657578 3.341232,10.389771z" fill="#333333" id="svg_6"/>
+   <path d="m266.698212,165.34082c16.044617,-21.805527 91.963989,-54.927841 53.287628,-21.471909c0,0 44.798126,-34.872826 18.209595,8.634125c28.783356,-21.753616 10.848389,22.557083 -25.457916,29.175491c-27.294861,4.158783 -45.052917,-16.337708 -46.039307,-16.337708z" fill="url(#linearGradient3027)" id="svg_7"/>
+   <path d="m166.990952,145.96817c0,0 7.826263,7.33429 17.844223,5.821152c4.362091,37.715805 -24.576385,34.199646 -5.131058,8.850937c0,0 -19.310318,0.458786 -12.713165,-14.672089z" fill="url(#linearGradient3024)" id="svg_8"/>
+  </g>
+ </g>
+</svg>

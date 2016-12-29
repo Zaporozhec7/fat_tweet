@@ -1,0 +1,13 @@
+.fat-tweet-convert-text {
+    padding: 3px 3px 1px;
+    height: auto;
+    line-height: 1;
+    margin-right: 12px;
+    position: relative;
+    vertical-align: middle;
+    top: -1px;   
+}
+
+.rich-editor.screenshot-process em {
+    background-color: inherit;
+}
