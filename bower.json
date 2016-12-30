@@ -1,0 +1,29 @@
+{
+  "name": "fat_tweet",
+  "authors": [
+    "Zaporozhec7"
+  ],
+  "description": "Chrome extension for using on Twitter that allow convert tweet to screenshot and attach that screenshot to tweet",
+  "main": "",
+  "keywords": [
+    "Chrome",
+    "Twitter",
+    "tweet",
+    "screenshot"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "html2canvas": "^0.4.1",
+    "jquery-observe": "^2.0.2",
+    "jQuery": "^3.1.1"
+  }
+}
