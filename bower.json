@@ -22,8 +22,8 @@
     "tests"
   ],
   "dependencies": {
-    "html2canvas": "^0.4.1",
-    "jquery-observe": "^2.0.2",
-    "jQuery": "^3.1.1"
+    "html2canvas": "0.4.1",
+    "jQuery": "^3.1.1",
+    "imagesloaded": "^4.1.1"
   }
 }

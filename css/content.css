@@ -8,6 +8,26 @@
     top: -1px;   
 }
 
+.rich-editor.screenshot-process {
+    line-height: 1;
+    background-color: #fff!important;
+}
+
 .rich-editor.screenshot-process em {
     background-color: inherit;
+}
+
+.rich-editor.screenshot-process .RichEditor-pictographText {
+    display: inline-block;
+    width: 22px!important;
+    max-width: 22px!important;
+}
+
+.rich-editor.screenshot-process .RichEditor-pictographText img {
+    max-width: 100%!important;
+}
+
+.rich-editor.screenshot-process .username {
+    text-align: right;
+    margin-top: 15px;
 }
