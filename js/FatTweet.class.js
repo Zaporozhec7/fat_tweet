@@ -34,21 +34,33 @@ class FatTweet {
             function _sendFatTweet(){
                 try {
                     FT._currentStatusText = FT.getTweetTextClean($form);
-                    FT.getScreenshot($form)
+                    FT.showSpinner($form)
+                      .getScreenshot($form)
                       .then(function(blobData){
                           FT.uploadScreenshot(blobData)
                           .then(function(screenshotMediaId){
                               try {
                                  FT.sendTweet(screenshotMediaId);
                               } catch(error){
+                                  FT.hideSpinner($form)
+                                    .resetTemporaryData();
                                   // @TODO: appropriate error handling
                                   console.error(error);
                               }
                           },
-                          FatTweet.error);
+                          function(t){
+                              FT.hideSpinner($form)
+                                .resetTemporaryData();
+                              FatTweet.error(t);
+                          });
                       },
-                      FatTweet.error);
+                      function(t){
+                          FT.hideSpinner($form)
+                            .resetTemporaryData();
+                          FatTweet.error(t);
+                      });
                 } catch(error){
+                    FT.hideSpinner($form);
                     // @TODO: appropriate error handling
                     console.error(error);
                 }
@@ -88,8 +100,6 @@ class FatTweet {
         // when can be added new tweet form
         $(document).on('uiInitTweetbox uiLoadDynamicContent uiOpenReplyDialog uiOpenTweetDialog', function(e, data){
             FT.processTweetBoxes();
-        }).on('uiTweetSent dataTweetSuccess', function(){
-            FT.resetTemporaryData();
         }).ajaxStop(function() {
             FT.processTweetBoxes();
         });
@@ -111,16 +121,29 @@ class FatTweet {
             return 'image';
         } else if($form.find('.ComposerThumbnail--gif').length){
             return 'gif';
-        } else if($form.find('.PollingCardComposer').length){
+        } else if($form.find('.PollingCardComposer:not(.u-hidden)').length){
             return 'poll';
         }
         return false;
+    }
+    // There are no available event to trigget
+    // to show tweet form spinner only and not
+    // perform other actions.
+    // So do this manually
+    showSpinner($form){
+        $form.addClass('fat-tweet-form-sending');
+        return this;
+    }
+    hideSpinner($form){
+        $form.removeClass('fat-tweet-form-sending');
+        return this;
     }
     resetTemporaryData(){
         this._mediaIds = [];
         this._mediaCount = 0;
         this._$currentForm = null;
         this._currentStatusText = null;
+        return this;
     }
     processTweetBoxes(){
         var FT = this;
@@ -133,13 +156,14 @@ class FatTweet {
                 var $form = $tweetBox.closest('form');
                 FT.processTweetForm($form);
         });
+        return this;
     }
     processTweetForm($form){
         var $button = $('<button class="btn fat-tweet-convert-text js-tooltip" data-delay="150" data-original-title="'
                         + FatTweet.t('Convert text into image, attach it to tweet and send')
                         + '" type="button"><img src="'
                         + this._extensionRoot
-                        + 'img/32.png"></button>');
+                        + 'img/32.png"><div class="fat-tweet-sending-spinner"></div></button>');
         $form
             .addClass('fat-tweet-processed-form')
             .find('.btn.tweet-btn')
@@ -355,7 +379,7 @@ class FatTweet {
         });
     }
     getCurrentTweetBoxId(){
-        if(typeof this._$currentForm != null && this._$currentForm.length)
+        if(this._$currentForm != null && this._$currentForm.length)
             return this._$currentForm.attr('id');
         return false;
     }
@@ -417,9 +441,13 @@ class FatTweet {
                         },
                     });
                  $form.trigger('uiComposerResetAndFocus');
+                 FT.hideSpinner($form);
+                 FT.resetTemporaryData();
             },
             function(jqXHR, textStatus, errorThrown){
                 FatTweet.error(textStatus);
+                FT.hideSpinner($form);
+                FT.resetTemporaryData();
             });
     }
     getLinksClean($content){

@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Fat tweet",
     "version": "0.1.0.2",
-    "version_name": "0.1.0-beta",
+    "version_name": "0.1.1-beta",
     "icons": {
         "128": "img/128.png",
         "64": "img/64.png",
@@ -37,6 +37,7 @@
         "js/FatTweet.class.js",
         "js/popup.js",
         "img/*.png",
+        "img/*.svg",
         "css/*.css"
     ]
 }
