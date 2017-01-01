@@ -5,6 +5,22 @@
         body {
             width: 300px;
         }
+        .page {
+            transition: all 500ms cubic-bezier(0.420, 0.000, 0.580, 1.000); /* ease-in-out */
+        }
+        /* TODO: Make some smooth animation for page changing*/
+        .current-page-main .page-main {
+            display: block;
+        }
+        .current-page-main .page-about {
+            display: none;
+        }
+        .current-page-about .page-main {
+            display: none;
+        }
+        .current-page-about .page-about {
+            display: block;
+        }
         label {
             display: block;
             font-size: 14px;
@@ -55,15 +71,40 @@
             text-align: center;
             margin-bottom: 5px;
         }
+        .links {
+            text-align: center;
+        }
+        .about-extension {
+            text-align: center;
+        }
     </style>
 </head>
-<body>
-    <h1><div class="name">Fat Tweet<span class="version">v0.0.1-alpha</span></div></h1>
-    <div class="about-link-wrapper"><a href="#">About</a></div>
-    <div id="settings">
-    
+<body class="current-page-main">
+    <h1><div class="name">Fat tweet<span class="version">v0.1.0-beta</span></div></h1>
+    <div class="page page-main">
+        <div class="about-link-wrapper"><a class="about-link" href="#">About</a></div>
+        <div id="settings">
+
+        </div>
+        <div class="note"></div>
     </div>
-    <div class="note"></div>
+    <div class="page page-about">
+        <div class="about-link-wrapper"><a class="about-back-link" href="#">&lt;&lt; Return to settings</a></div>
+        <div class="about-extension">
+            This extension add to tweet form on twitter.com
+            additional button by clicking which you able to
+            send tweet text as image attached to tweet.
+        </div>
+        <ul class="links">
+            <li>
+                <a title="Will open in new tab" href="https://github.com/Zaporozhec7/fat_tweet">Project on GitHub</a>
+            </li>
+            <li>
+                <a title="Will open in new tab" href="https://twitter.com/Zaporozhec7">Author</a>
+            </li>
+        </ul>
+
+    </div>
     <script type="text/javascript" src="bower_components/jQuery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="js/FatTweet.class.js"></script>
     <script type="text/javascript" src="js/popup.js"></script>

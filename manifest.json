@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
     "name": "Fat tweet",
-    "version": "0.0.1",
-    "version_name": "0.0.1-alpha",
+    "version": "0.1.0.2",
+    "version_name": "0.1.0-beta",
     "icons": {
         "128": "img/128.png",
         "64": "img/64.png",
@@ -21,7 +21,8 @@
     ],
     "permissions": [
         "https://twitter.com/*",
-        "storage"
+        "storage",
+        "tabs"
     ],
     "browser_action": {
         "default_title": "Fat tweet",

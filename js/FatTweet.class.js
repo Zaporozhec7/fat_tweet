@@ -135,7 +135,11 @@ class FatTweet {
         });
     }
     processTweetForm($form){
-        var $button = $('<button class="btn fat-tweet-convert-text js-tooltip" data-delay="150" data-original-title="Convert text into image" type="button"><img src="'+this._extensionRoot+'img/32.png"></button>');
+        var $button = $('<button class="btn fat-tweet-convert-text js-tooltip" data-delay="150" data-original-title="'
+                        + FatTweet.t('Convert text into image, attach it to tweet and send')
+                        + '" type="button"><img src="'
+                        + this._extensionRoot
+                        + 'img/32.png"></button>');
         $form
             .addClass('fat-tweet-processed-form')
             .find('.btn.tweet-btn')
