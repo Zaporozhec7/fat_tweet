@@ -11,12 +11,18 @@
             margin-bottom: 6px;
             padding: 5px;
         }
+        label::after {
+            content: '';
+            display: block;
+            clear: both;
+        }
         label:nth-of-type(even) {
             background-color: #dedede;
         }
         input {
             display: inline-block;
             vertical-align: middle;
+            float: left;
             margin-right: 15px;
         }
         [type="number"] {

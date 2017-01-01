@@ -22,6 +22,7 @@ class FatTweet {
         };
         this._extensionRoot = extensionRoot;
         this._mediaIds = [];
+        this._mediaCount = 0;
         this._$currentForm = null;
         this._currentStatusText = null;
         this.processTweetBoxes();
@@ -30,33 +31,71 @@ class FatTweet {
             e.preventDefault();
             var $form = $(this).closest('form');
             FT._$currentForm = $form;
-            try {
-                FT._currentStatusText = FT.getTweetTextClean($form);
-                FT.getScreenshot($form)
-                  .then(function(blobData){
-                      FT.uploadScreenshot(blobData)
-                      .then(function(screenshotMediaId){
-                          try {
-                             FT.sendTweet(screenshotMediaId);
-                          } catch(error){
-                              // @TODO: appropriate error handling
-                              console.error(error);
-                          }
+            function _sendFatTweet(){
+                try {
+                    FT._currentStatusText = FT.getTweetTextClean($form);
+                    FT.getScreenshot($form)
+                      .then(function(blobData){
+                          FT.uploadScreenshot(blobData)
+                          .then(function(screenshotMediaId){
+                              try {
+                                 FT.sendTweet(screenshotMediaId);
+                              } catch(error){
+                                  // @TODO: appropriate error handling
+                                  console.error(error);
+                              }
+                          },
+                          FatTweet.error);
                       },
                       FatTweet.error);
-                  },
-                  FatTweet.error);
-            } catch(error){
-                // @TODO: appropriate error handling
-                console.error(error);
+                } catch(error){
+                    // @TODO: appropriate error handling
+                    console.error(error);
+                }
+            }
+            var hasAttachments = FT.formHasAttachments($form);
+            if(!hasAttachments || !FT._settings.attachment_confirmation){
+                _sendFatTweet();
+            } else {
+                var confirmMessage;
+                switch(hasAttachments){
+                    case 'image':
+                        confirmMessage = FatTweet.t('Tweet has image(s) attached that will be lost if you will continue.\n Continue?');
+                        break;
+                    case 'gif':
+                        confirmMessage = FatTweet.t('Tweet has GIF attached that will be lost if you will continue.\n Continue?');
+                        break;
+                    case 'poll':
+                        confirmMessage = FatTweet.t('Tweet has poll attached that will be lost if you will continue.\n Continue?');
+                        break;
+                }
+                if(window.confirm(confirmMessage)) {
+                    _sendFatTweet();
+                }
             }
         });
+        $(document).on('uiImagePickerAdd uiImagePickerRemove', function(e, data = {}){
+            if(typeof data.scribeContext != 'object'
+               || typeof data.scribeContext.component == 'undefined'
+               || data.scribeContext.component != 'tweet_box') return;
+            if(e.type == 'uiImagePickerAdd'){
+                FT._mediaCount++;
+            } else {
+                FT._mediaCount--;
+            }
+        })
+        // Try to catch all possible cases
+        // when can be added new tweet form
         $(document).on('uiInitTweetbox uiLoadDynamicContent uiOpenReplyDialog uiOpenTweetDialog', function(e, data){
             FT.processTweetBoxes();
-        });
-        $(document).on('uiTweetSent', function(){
+        }).on('uiTweetSent dataTweetSuccess', function(){
             FT.resetTemporaryData();
+        }).ajaxStop(function() {
+            FT.processTweetBoxes();
         });
+        // Mutation observer should be enough to achieve
+        // task above, but by some cause that i do not found yet
+        // it do not always work, so use events bindings above too
         var observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 var $addedNodes = $(mutation.addedNodes);
@@ -67,8 +106,19 @@ class FatTweet {
         });
         observer.observe(document.body, {attributes: false, childList: true, characterData: false});
     }
+    formHasAttachments($form){
+        if($form.find('.ComposerThumbnail:not(.ComposerThumbnail--gif)').length){
+            return 'image';
+        } else if($form.find('.ComposerThumbnail--gif').length){
+            return 'gif';
+        } else if($form.find('.PollingCardComposer').length){
+            return 'poll';
+        }
+        return false;
+    }
     resetTemporaryData(){
         this._mediaIds = [];
+        this._mediaCount = 0;
         this._$currentForm = null;
         this._currentStatusText = null;
     }
@@ -301,7 +351,7 @@ class FatTweet {
         });
     }
     getCurrentTweetBoxId(){
-        if(typeof this._$currentForm == 'object' && this._$currentForm.length)
+        if(typeof this._$currentForm != null && this._$currentForm.length)
             return this._$currentForm.attr('id');
         return false;
     }
@@ -458,6 +508,7 @@ class FatTweet {
                     resolve({
                         enabled: 1,
                         insert_nickname: 1,
+                        attachment_confirmation: 1,
                         font_size: 16,
                         screenshot_timeout: 500,
                     });
@@ -468,7 +519,7 @@ class FatTweet {
     static saveSettingsToStorage(settings){
         return new Promise(function(resolve, reject){
             if(typeof chrome.storage.sync == 'undefined'){
-                reject(FatTweet.t('Chrome storage unavailable.'));
+                reject(FatTweet.t('Chrome sync storage unavailable.'));
                 return;
             }
             chrome.storage.sync.set({'FatTweet': settings}, function() {
