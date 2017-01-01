@@ -9,6 +9,10 @@
             display: block;
             font-size: 14px;
             margin-bottom: 6px;
+            padding: 5px;
+        }
+        label:nth-of-type(even) {
+            background-color: #dedede;
         }
         input {
             display: inline-block;
@@ -21,9 +25,35 @@
         .note {
 
         }
+        .description {
+            font-size: 0.7em;
+            margin-top: 5px;
+        }
+        h1 {
+            text-align: center;
+            margin: 0;
+        }
+        h1 .name {
+            display: inline-block;
+            position: relative;
+        }
+        h1 .name .version {
+            position: absolute;
+            top: 0;
+            right: -69px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #2d2d2d;
+        }
+        .about-link-wrapper {
+            text-align: center;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
+    <h1><div class="name">Fat Tweet<span class="version">v0.0.1-alpha</span></div></h1>
+    <div class="about-link-wrapper"><a href="#">About</a></div>
     <div id="settings">
     
     </div>

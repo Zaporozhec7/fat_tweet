@@ -1,18 +1,31 @@
 class FatTweet {
     constructor(extensionRoot, settings){
         this._settings = settings;
+        this._uploadsAPIDomain = 'https://upload.twitter.com';
+        this._tweetAPIDomain = 'https://twitter.com';
         // Can be image/jpeg, image/jpg, image/png
         this._screenshotImageTypeDefault = 'image/png';
         // Should be float or integer from 0 to 1
         // mean screenshot quality
         this._screenshotImageQualityDefault = 1;
+        this._ajaxDefaultSettings = {
+            type: 'POST',
+            global: false,
+            crossDomain: true,
+            // I do not really know why such timeout,
+            // just seen that twitter use such value
+            // for requests that we made
+            timeout: 45000,
+            xhrFields: {
+                withCredentials: true,
+            }
+        };
         this._extensionRoot = extensionRoot;
         this._mediaIds = [];
         this._$currentForm = null;
         this._currentStatusText = null;
         this.processTweetBoxes();
         var FT = this;
-        console.error(FatTweet.t('Fat tweet extension: For now after sent "Fat tweet" caused exception (Uncaught TypeError: Cannot read property \'tweetboxId\' of undefined). That is not very good, but I do not found way yet how to catch it or prevent. Also there are no "log" or "warn" methods in console here (seems it unset somewhere) so used "error" method to show this message.'));
         $('body').on('click', '.fat-tweet-convert-text', function(e){
             e.preventDefault();
             var $form = $(this).closest('form');
@@ -38,11 +51,11 @@ class FatTweet {
                 console.error(error);
             }
         });
-        $(document).on('uiTweetSent', function(e){
+        $(document).on('uiInitTweetbox uiLoadDynamicContent uiOpenReplyDialog uiOpenTweetDialog', function(e, data){
+            FT.processTweetBoxes();
+        });
+        $(document).on('uiTweetSent', function(){
             FT.resetTemporaryData();
-        }).on('uiSendTweet', function(e, data){
-            console.error(e);
-            console.error(data);
         });
         var observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
@@ -124,7 +137,7 @@ class FatTweet {
                 html2canvas($area.get(0), {
                     onrendered: function(canvas) {
                         $area.removeClass('screenshot-process');
-                        resolve(FT.getBlobFromCanvas(canvas));
+                        resolve(FT.getBlobFromCanvas(canvas, FT._screenshotImageTypeDefault, FT._screenshotImageQualityDefault));
                         FT.areaCleanup($area);
                     },
                     onerror: function(){
@@ -134,13 +147,69 @@ class FatTweet {
                     },
                     allowTaint: true,
                     letterRendering: true,
+                    timeout: FT._settings.screenshot_timeout,
                 });
             });
         });
     }
-    getBlobFromCanvas(canvas, type = this._screenshotImageTypeDefault, quality = this._screenshotImageQualityDefault){
+    getBlobFromCanvas(canvas, type = 'image/png', quality = 1){
         var dataURL = canvas.toDataURL(type, quality);
         return this.dataURItoBlob(dataURL);
+    }
+
+    // Was have issue like this https://bugs.chromium.org/p/chromium/issues/detail?id=243080
+    // when ajax requests canceled by chrome
+    // but little different, and do not found cause
+    // This solution seems work
+    ajax(url, settings, successCallback, failCallback, initTimeout = 200, retryTimeout = 400, maxAttempts = 3, attemptsDone = 0, retryTimeoutGrowth = 200){
+        var FT = this;
+        if(!attemptsDone){
+            settings = $.extend(true, {}, this._ajaxDefaultSettings, settings);
+        }
+        function _ajax(){
+            var isDone = false;
+            var isFail = false;
+            function _retry(){
+                if(retryTimeoutGrowth){
+                    retryTimeout += retryTimeoutGrowth;
+                }
+                setTimeout(function(){
+                    FT.ajax(url, settings, successCallback, failCallback, 0, retryTimeout, maxAttempts, attemptsDone + 1, retryTimeoutGrowth);
+                }, retryTimeout);
+            }
+            $.ajax(url, settings)
+                .done(function(a, b, c){
+                    isDone = true;
+                    successCallback(a, b, c);
+                })
+                .fail(function(a, b, c){
+                    isFail = true;
+                    if(attemptsDone + 1 < maxAttempts){
+                        _retry();
+                    } else {
+                        failCallback(a, b, c);
+                    }
+                })
+                .always(function(a, b, c){
+                    // Workaround for some HTTP headers
+                    // that twitter sometimes sent on which
+                    // not called .done() or .fail()
+                    if(b != 'success' && !isDone && !isFail){
+                        if(attemptsDone + 1 < maxAttempts){
+                            _retry();
+                        } else {
+                            failCallback(a, b, c);
+                        }
+                    } else if(b == 'success'){
+                        successCallback(a, b, c);
+                    }
+                });
+        }
+        if(initTimeout){
+            setTimeout(_ajax, initTimeout);
+        } else {
+            _ajax();
+        }
     }
     uploadScreenshot(blobData){
         var FT = this;
@@ -171,57 +240,46 @@ class FatTweet {
     initUpload(blobData){
         var FT = this;
         return new Promise(function(resolve, reject) {
-            var url = 'https://upload.twitter.com/i/media/upload.json?command=INIT&total_bytes='
+            var url = FT._uploadsAPIDomain + '/i/media/upload.json?command=INIT&total_bytes='
             + blobData.size
             + '&media_type='
-            + FT._screenshotImageTypeDefault
+            + encodeURIComponent(FT._screenshotImageTypeDefault)
             + '&media_category=tweet_image';
-            // Can't use $.ajax here, because
-            // Twitter return HTTP status 202 here
-            // and jQuery.ajax do not fire "success"
-            // or .done() for that response
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open('POST', url, true);
-            xmlHttp.withCredentials = true;
-            xmlHttp.onreadystatechange = function() {
-                if (xmlHttp.readyState === 4) {
-                    if (xmlHttp.status === 202) {
-                        var data = JSON.parse(xmlHttp.responseText);
-                        resolve({
+            FT.ajax(
+                url,
+                {
+                    dataType: 'json',
+                },
+                function(a){
+                    resolve({
                             blobData: blobData,
-                            screenshotMediaId: data.media_id_string,
+                            screenshotMediaId: a.media_id_string,
                         });
-                    } else {
-                        reject(FatTweet.t('Fat Tweet: Something went wrong on media INIT stage'));
-                    }
-                }
-            };
-            xmlHttp.send();
+                },
+                function(){
+                    reject(FatTweet.t('Fat Tweet: Something went wrong on media INIT stage'));
+                });
         });
     }
     appendUpload(data){
         var FT = this;
         return new Promise(function(resolve, reject) {
-            var url = 'https://upload.twitter.com/i/media/upload.json?command=APPEND&media_id='
+            var url = FT._uploadsAPIDomain + '/i/media/upload.json?command=APPEND&media_id='
             + data.screenshotMediaId
             + '&segment_index=0';
             var fd = new FormData();
             fd.append('media', data.blobData, 'blob');
-            $.ajax(
+            FT.ajax(
                 url,
                 {
-                    type: 'POST',
                     data: fd,
                     contentType: false,
                     processData: false,
-                    xhrFields: {
-                        withCredentials: true,
-                    }
-                })
-                .done(function(){
+                },
+                function(a){
                     resolve();
-                })
-                .fail(function(){
+                },
+                function(){
                     reject(FatTweet.t('Fat Tweet: Something went wrong on media APPEND stage'));
                 });
         });
@@ -229,20 +287,15 @@ class FatTweet {
     finalizeUpload(mediaId){
         var FT = this;
         return new Promise(function(resolve, reject) {
-            var url = 'https://upload.twitter.com/i/media/upload.json?command=FINALIZE&media_id='
+            var url = FT._uploadsAPIDomain + '/i/media/upload.json?command=FINALIZE&media_id='
             + mediaId;
-            $.ajax(
+            FT.ajax(
                 url,
-                {
-                    type: 'POST',
-                    xhrFields: {
-                        withCredentials: true,
-                    }
-                })
-                .done(function(){
+                {},
+                function(a){
                     resolve();
-                })
-                .fail(function(){
+                },
+                function(){
                     reject(FatTweet.t('Fat Tweet: Something went wrong on media FINALIZE stage'));
                 });
         });
@@ -250,6 +303,21 @@ class FatTweet {
     getCurrentTweetBoxId(){
         if(typeof this._$currentForm == 'object' && this._$currentForm.length)
             return this._$currentForm.attr('id');
+        return false;
+    }
+    getInReplyStatusId($form){
+        var $area = $form.find('.tweet-box[name="tweet"]');
+        var areaId = $area.attr('id');
+        var matches = areaId.match(/reply\-to\-([0-9]+)/);
+        if(matches !== null){
+            return matches[1].toString();
+        }
+        return false;
+    }
+    isPermalinkPage($form){
+        if($form.closest('.permalink').length){
+            return true;
+        }
         return false;
     }
     // I do not found where Twitter store ids of
@@ -262,27 +330,43 @@ class FatTweet {
         var FT = this;
         var $form = this._$currentForm;
         var token = this.getFormAuthenticityToken();
+        var url = FT._tweetAPIDomain + '/i/tweet/create';
         var data = {
-            tweetboxId: FT.getCurrentTweetBoxId(),
-            tweetData: {
-                is_permalink_page: false,
-                media_ids: screenshotMediaId.toString(),
-                place_id: '',
-                status: FT._currentStatusText,
-                tagged_users: '',
-            },
+            authenticity_token: token,
+            is_permalink_page: FT.isPermalinkPage($form),
+            media_ids: screenshotMediaId.toString(),
+            place_id: '',
+            status: FT._currentStatusText,
+            tagged_users: '',
         };
-        // Trigger tweet sendind with help of twitter API
-        // Also trigger message showing
-        // because for now there are caused uncaught
-        // exception by method "tweetSent" that called after
-        // uiSendTweet event processed successfully,
-        // and success message do not shown
-        $(document)
-            .trigger('uiSendTweet', data)
-            .trigger('uiShowMessage', {
-                message: FatTweet.t('Fat tweet was successfully sent'),
-            })
+        var inReplyToId = FT.getInReplyStatusId($form);
+        if(inReplyToId){
+            data.in_reply_to_status_id = inReplyToId;
+        }
+        FT.ajax(
+            url,
+            {
+                data: data,
+                dataType: 'json',
+            },
+            function(response){
+                $(document)
+                     .trigger('uiShowMessage', {
+                         message: response.message,
+                     })
+                     .trigger('dataTweetSuccess', {
+                        tweetboxId: FT.getCurrentTweetBoxId(),
+                        message: response.message,
+                        tweet_id: response.tweet_id,
+                        sourceEventData: {
+                            tweetboxId: FT.getCurrentTweetBoxId(),
+                        },
+                    });
+                 $form.trigger('uiComposerResetAndFocus');
+            },
+            function(jqXHR, textStatus, errorThrown){
+                FatTweet.error(textStatus);
+            });
     }
     getLinksClean($content){
         var $links = $content.find('a');
@@ -375,6 +459,7 @@ class FatTweet {
                         enabled: 1,
                         insert_nickname: 1,
                         font_size: 16,
+                        screenshot_timeout: 500,
                     });
                 }
             });

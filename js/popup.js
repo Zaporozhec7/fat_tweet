@@ -17,6 +17,12 @@ $(document).ready(function(){
                         + settings.font_size
                         + '">'
                         + FatTweet.t('Font size on screenshot (in pixels)') + '</label>')
+                .append('<label><input name="screenshot_timeout" type="number" required value="'
+                        + settings.screenshot_timeout
+                        + '">'
+                        + FatTweet.t('Timeout before make screenshot (ms)')
+                        + '<div class="description">' + FatTweet.t('Need to have all styles applied before screenshot maked.') + '</div>'
+                        + '</label>')
                 .on('change', 'input', function(){
                     var newSettings = {};
                     $('#settings input').each(function(){
@@ -31,7 +37,7 @@ $(document).ready(function(){
                     });
                     FatTweet.saveSettingsToStorage(newSettings);
                 });
-                $('.note').text(FatTweet.t('Note: When you change settings, please roload page to have them applied.'));
+                $('.note').text(FatTweet.t('Note: When you change settings, please reload page to have them applied.'));
         },
         function(reason){
             FatTweet.error(reason);
