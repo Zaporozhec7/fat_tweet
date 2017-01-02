@@ -1,7 +1,7 @@
 # Fat tweet
 Chrome extension that allow by one button click convert tweet to screenshot, attach that screenshot to tweet and send.
 
-Video - https://www.youtube.com/watch?v=cJxgJQf8Dzg&feature=youtu.be 
+Video - https://www.youtube.com/watch?v=3JRXCljOE7k&feature=youtu.be
 
 ##For now exists some limitations:
 
