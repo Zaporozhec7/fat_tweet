@@ -390,6 +390,16 @@ class FatTweet {
         if(matches !== null){
             return matches[1].toString();
         }
+        // Possibly this is modal tweet form
+        // so try another way to find tweet id
+        // Fix for this bug - https://github.com/Zaporozhec7/fat_tweet/issues/3
+        var $formModalContainer = $form.closest('.modal-tweet-form-container');
+        if($formModalContainer.length){
+            var $modalTweet = $('.modal-body.modal-tweet');
+            if($modalTweet.length){
+                return $modalTweet.find('[data-tweet-id]').data('tweet-id');
+            }
+        }
         return false;
     }
     isPermalinkPage($form){
