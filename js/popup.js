@@ -56,16 +56,16 @@ $(document).ready(function(){
                         if('checkbox' == type){
                             var value = $(this).is(':checked') ? 1 : 0;
                         } else if('number' == type){
-                            minNum = $(this).attr('min'); console.log(minNum);
-                            maxNum = $(this).attr('max'); console.log(maxNum);
+                            minNum = $(this).attr('min');
+                            maxNum = $(this).attr('max');
 //                            numStep = $(this).attr('step');
-                            var value = parseInt($(this).val()); console.log(value);
+                            var value = parseInt($(this).val());
                             if(value < minNum){
-                                $(this).val(minNum); console.log(1);
+                                $(this).val(minNum);
                                 value = minNum;
                             }
                             if(value > maxNum){
-                                $(this).val(maxNum); console.log(2);
+                                $(this).val(maxNum);
                                 value = maxNum;
                             }
                         }
