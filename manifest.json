@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
     "name": "Fat tweet",
-    "version": "0.1.0.4",
-    "version_name": "0.1.3-beta",
+    "version": "0.1.4.2",
+    "version_name": "0.1.4-beta",
     "icons": {
         "128": "img/128.png",
         "64": "img/64.png",

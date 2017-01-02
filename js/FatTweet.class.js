@@ -451,14 +451,26 @@ class FatTweet {
                         },
                     });
                  $form.trigger('uiComposerResetAndFocus');
-                 FT.hideSpinner($form);
-                 FT.resetTemporaryData();
+                 FT.hideSpinner($form)
+                   .resetTemporaryData()
+                   .updateTimeline();
             },
             function(jqXHR, textStatus, errorThrown){
                 FatTweet.error(textStatus);
-                FT.hideSpinner($form);
-                FT.resetTemporaryData();
+                 FT.hideSpinner($form)
+                   .resetTemporaryData()
+                   .updateTimeline();
             });
+    }
+    updateTimeline(){
+        $('#timeline').trigger('uiTimelineShouldRefresh', {
+            fromPolling: false,
+            injectImmediately: true,
+            interval: 10000,
+            scribeContext: {
+                component: 'tweet',
+            },
+        });
     }
     getLinksClean($content){
         var $links = $content.find('a');
