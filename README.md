@@ -3,7 +3,11 @@ Chrome (Opera/Chromium) extension that allow by one button click convert tweet t
 
 It do not use any external services, all operations performed directly on page by javascript.
 
-Video - https://www.youtube.com/watch?v=3JRXCljOE7k&feature=youtu.be
+[Video on YouTube](https://www.youtube.com/watch?v=3JRXCljOE7k&feature=youtu.be)
+
+# Warning
+
+Due this bug - [Screenshot totally white, without text on it](https://github.com/Zaporozhec7/fat_tweet/issues/7), that appear rare but randomly, please copy tweet text to clipboard before submit tweet, if you submit tweet throught extension button.
 
 ##For now exists some limitations:
 
