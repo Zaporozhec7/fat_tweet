@@ -16,8 +16,9 @@ Due this bug - [Screenshot totally white, without text on it](https://github.com
 3. It quite buggy for now
 
 ##Installation
-After extension will be validated in Chrome webstore, it can be installed from there (for now it wait validation, when will be published here will be published link to it).
-If someone want use extension now, he can download extension .crx file in "releases" section here:
+Extension can be installed from Chrome webstore - https://chrome.google.com/webstore/detail/fat-tweet/jaafhefkahfplcmdmmojbpcapekcpapm
+
+If someone want use latest extension version, if that version not uploaded to webstore yet, he can download extension .crx file in "releases" section here:
 
 1. Download .crx file
 2. Open extensions page in your browser 
